@@ -4,7 +4,6 @@ on:
  push:
   branches:
    - master
-   - add-build-and-deploy-action # TODO: remove
 
 jobs:
   build:
