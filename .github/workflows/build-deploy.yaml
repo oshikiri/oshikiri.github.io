@@ -1,0 +1,20 @@
+name: Zola on GitHub Pages
+
+on:
+ push:
+  branches:
+   - master
+   - add-build-and-deploy-action # TODO: remove
+
+jobs:
+  build:
+    name: Publish site
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout main
+      uses: actions/checkout@v3.0.0
+    - name: Build and deploy
+      uses: shalzz/zola-deploy-action@v0.17.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BUILD_ONLY: true
