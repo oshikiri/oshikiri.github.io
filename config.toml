@@ -2,3 +2,4 @@ base_url = "https://oshikiri.github.io"
 
 [markdown]
 highlight_code = true
+highlight_theme = "ayu-dark"
