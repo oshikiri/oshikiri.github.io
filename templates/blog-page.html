@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block header %}
+<!-- header -->
+{% endblock %}
+
 {% block content %}
 <h1 class="title">
   {{ page.title }}
@@ -7,13 +11,13 @@
 <p class="subtitle"><strong>{{ page.date }}</strong></p>
 {% if page.description %}
 <p>
-  <b>tl;dr</b>: {{ page.description }}
+  <b>要約</b>: {{ page.description }}
 </p>
 {% endif %}
 
 {% if page.toc %}
   <div class="tableofcontent">
-    <p>目次:</p>
+    <p><b>目次</b>:</p>
     <ul>
     {% for h1 in page.toc %}
         <li>
