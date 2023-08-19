@@ -12,11 +12,13 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3.5.3
-    - name: Build and deploy
-      uses: shalzz/zola-deploy-action@v0.17.2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        BUILD_ONLY: true
+    - name: Install zola
+      uses: taiki-e/install-action@v2.16.0
+      with:
+        tool: zola@0.17.2
+    - name: Build
+      run: |
+        zola build
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v2.0.0
       with:
