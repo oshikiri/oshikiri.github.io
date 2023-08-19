@@ -1,4 +1,70 @@
 body {
-    width: 700px;
-    padding-left: 50px;
+    background-color: black;
+}
+
+@media (min-width: 800px) {
+    body {
+        width: 700px;
+        padding-left: 100px;
+        margin: 0;
+    }
+}
+
+@media (max-width: 800px) {
+    body {
+        padding: 10px;
+    }
+}
+
+h1, h2, p, ul, li::marker {
+    color: lightgrey;
+}
+
+a {
+    color: lightblue;
+}
+
+pre {
+    white-space: pre-wrap;
+    margin: 0;
+    padding-top: 1ch;
+    padding-bottom: 1ch;
+}
+
+code {
+    /* This is ayu-dark color */
+    background-color: #0f1419;
+}
+
+.tableofcontent {
+    > p {
+        margin-bottom: 0;
+    }
+    > ul {
+        margin-top: 0;
+    }
+}
+
+.footnote-definition {
+    color: lightgrey;
+    font-size: x-small;
+    padding-left: 40px;
+    position: relative;
+
+    > sup {
+        position: absolute;
+        top: 0;
+        right: calc(100% - 35px);
+        display: inline-block;
+    }
+    > sup::before {
+        content: "注"
+    }
+    > sup::after {
+        content: ":"
+    }
+    > p {
+        display: inline-block;
+        margin: 0;
+    }
 }
