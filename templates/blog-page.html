@@ -5,9 +5,11 @@
   {{ page.title }}
 </h1>
 <p class="subtitle"><strong>{{ page.date }}</strong></p>
+{% if page.description %}
 <p>
   <b>tl;dr</b>: {{ page.description }}
 </p>
+{% endif %}
 
 {% if page.toc %}
   <div class="tableofcontent">
