@@ -27,8 +27,7 @@ a {
 pre {
     white-space: pre-wrap;
     margin: 0;
-    padding-top: 1ch;
-    padding-bottom: 1ch;
+    padding: 1ch;
 }
 
 code {
