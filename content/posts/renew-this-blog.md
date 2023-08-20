@@ -1,5 +1,5 @@
 +++
-title = "oshikiri.org の構成をzola+GitHub Pagesに変更した"
+title = "このサイトの構成をzola+GitHub Pagesに変更した"
 date = 2023-08-19
 description = "2023年にこのサイトの構成を更新したときの備忘録として、それぞれの理由などの記録を残しておく。"
 +++
