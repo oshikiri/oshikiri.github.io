@@ -1,19 +1,8 @@
----
-title: Amazonはいわゆる研究開発費を公表していない
-date: 2020-10-21
-type: posts
-outputs:
-  - html
-tags:
-  - survey
-  - accounting
-comments: true
----
-
-**要約：** Amazonの「研究開発費」として報じられる金額の出典は、“technology and content” というAmazon独自の項目である。
-しかし、この項目は、AWSの運用コストといった、研究開発費には通常含めないものを含んでいるため、他の会社との比較に使うことができない。
-
-<!--more-->
++++
+title = "Amazonはいわゆる研究開発費を公表していない"
+date = "2020-10-21"
+description = "Amazonの「研究開発費」として報じられる金額の出典は、“technology and content” というAmazon独自の項目である。しかし、この項目は、AWSの運用コストといった、研究開発費には通常含めないものを含んでいるため、他の会社との比較に使うことができない。"
++++
 
 ## Amazon の研究開発費
 

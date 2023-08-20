@@ -1,20 +1,10 @@
----
-type: posts
-title: "Hugo でエスケープの問題を回避しつつ KaTeX を使う"
-date: "2019-08-12"
-outputs:
-  - html
-tags:
-  - Hugo
-comments: true
-eq: true
----
++++
+title = "Hugo でエスケープの問題を回避しつつ KaTeX を使う"
+date = "2019-08-12"
+description = "Hugo で構築したブログで [KaTeX](https://katex.org/) を使った数式組版を行いたいが、よく使われている auto-render extention を使う方式だとエスケープの問題がある。そこで、Hugo の shortcode を経由することでエスケープの問題を回避する。"
++++
 
-
-**tl;dr** Hugo で構築したブログで [KaTeX](https://katex.org/) を使った数式組版を行いたいが、よく使われている auto-render extention を使う方式だとエスケープの問題がある。
-そこで、Hugo の shortcode を経由することでエスケープの問題を回避する。
-
-<!--more-->
+!!! 注意: このブログは以前Hugoでビルドしていたが、[現在はzolaに移行済み](@/posts/renew-this-blog.md)のため、この記事の数式レンダリング部分の一部は動かなくなっている。!!!
 
 ## KaTeX の auto-render extention を使う方式
 
@@ -69,24 +59,24 @@ layouts/shortcodes/eq-display.html:
 [^example]: 例は <https://katex.org/> より
 
 ```
-See how it renders with {{</*eq "\KaTeX"*/>}}:
+See how it renders with {{<eq "\KaTeX">}}:
 
-{{</* eq-display */>}}
+{{< eq-display >}}
   f(x) = \int_{-\infty}^\infty
     \hat f(\xi)\,e^{2 \pi i \xi x}
     \,d\xi
-{{</* /eq-display */>}}
+{{< /eq-display >}}
 ```
 
 するとこんな感じでレンダリングされる。
 
 >See how it renders with {{<eq "\KaTeX">}}:
 >
-{{< eq-display >}}
-  f(x) = \int_{-\infty}^\infty
-    \hat f(\xi)\,e^{2 \pi i \xi x}
-    \,d\xi
-{{< /eq-display >}}
+>{{< eq-display >}}
+>  f(x) = \int_{-\infty}^\infty
+>    \hat f(\xi)\,e^{2 \pi i \xi x}
+>    \,d\xi
+>{{< /eq-display >}}
 
 ただし、auto-render extention 方式に比べると明らかに記法が煩雑なので、こちらの方式がかならずしも良いとは言い切れない。
 簡潔だがたまにエスケープで厄介なことになる記法を好むか、煩雑だがエスケープの問題がない記法を好むか、好みが別れるかなと思う。
