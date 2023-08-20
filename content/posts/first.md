@@ -5,4 +5,4 @@ date = 2019-11-27
 
 This is my first blog post.
 
-[the second post](@/blog/second.md)
+[the second post](@/posts/second.md)

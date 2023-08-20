@@ -1,6 +1,6 @@
 # oshikiri.github.io
 
-Background: <https://oshikiri.github.io/blog/renew-this-blog/>
+Background: <https://oshikiri.org/posts/renew-this-blog/>
 
 ## Requirements
 - zola
