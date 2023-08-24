@@ -10,7 +10,8 @@
 <h1 class="title">
   {{ page.title }}
 </h1>
-<p class="subtitle"><strong>{{ page.date }}</strong></p>
+<div id="article-header">
+<p class="subtitle"><strong>記事を書いた日</strong>: {{ page.date }}</p>
 {% if page.description %}
 <p>
   <b>要約</b>: {{ page.description }}
@@ -47,6 +48,7 @@
     </ul>
   </div>
 {% endif %}
+</div>
 
 {{ page.content | safe }}
 
