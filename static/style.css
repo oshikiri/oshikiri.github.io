@@ -24,6 +24,40 @@ a {
     color: lightblue;
 }
 
+h2 {
+    margin-top: 50px;
+}
+
+h2:before,
+h3:before,
+h4:before,
+h5:before {
+  color: grey;
+}
+h2:before {
+  content:"## ";
+}
+h3:before {
+  content:"### ";
+}
+h4:before {
+  content:"#### ";
+}
+h5:before {
+  content:"##### ";
+}
+
+#article-header {
+    margin: 2%;
+    padding-left: 3%;
+    padding-right: 3%;
+    width: 90%;
+    background-color: rgb(30, 30, 30);
+    border-radius: 5%;
+    padding-top: 1ch;
+    padding-bottom: 1ch;
+}
+
 pre {
     white-space: pre-wrap;
     margin: 5px 0;
