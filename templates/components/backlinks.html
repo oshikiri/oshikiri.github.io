@@ -1,0 +1,14 @@
+{% if page.backlinks %}
+  <h2>この記事にリンクしている記事</h2>
+  <ul>
+  {% for bl in page.backlinks %}
+    <li>
+      <a href="{{bl.permalink}}">
+        {{ bl.title }}
+      </a>
+    </li>
+  {% endfor %}
+  </ul>
+{% else %}
+  <p>なし</p>
+{% endif %}

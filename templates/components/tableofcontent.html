@@ -1,0 +1,30 @@
+{% if page.toc %}
+<div class="tableofcontent">
+  <p><b>目次</b>:</p>
+  <ul>
+  {% for h1 in page.toc %}
+      <li>
+        <a href="#{{ h1.id | safe }}">{{ h1.title }}</a>
+        {% if h1.children %}
+          <ul>
+          {% for h2 in h1.children %}
+            <li>
+              <a href="#{{ h2.id | safe }}">{{ h2.title }}</a>
+              {% if h2.children %}
+              <ul>
+              {% for h3 in h2.children %}
+                <li>
+                  <a href="#{{ h3.id | safe }}">{{ h3.title }}</a>
+                </li>
+              {% endfor %}
+              </ul>
+            {% endif %}
+            </li>
+          {% endfor %}
+          </ul>
+        {% endif %}
+      </li>
+  {% endfor %}
+  </ul>
+</div>
+{% endif %}
