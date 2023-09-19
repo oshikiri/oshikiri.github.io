@@ -11,7 +11,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4.0.0
     - name: Install zola
-      uses: taiki-e/install-action@v2.18
+      uses: taiki-e/install-action@v2
       with:
         tool: zola@0.17.2
     - name: Build
