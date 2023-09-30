@@ -1,0 +1,19 @@
+<div class="code-with-caption">
+  <style>
+    .caption-title {
+        font-size: small;
+        background-color: #0f1419;
+        padding: 1ch;
+        padding-bottom: 1ch;
+        border: solid 1px lightgray;
+        border-bottom: dashed 1px lightgray;
+        border-radius: 15px 15px 0 0;
+        z-index: -1;
+    }
+    .code-body pre {
+      border-radius: 0 15px 15px 15px;
+    }
+  </style>
+  <span class="caption-title">{{title}}</span>
+  <div class="code-body"> {{ body | markdown | safe }} </div>
+</div>

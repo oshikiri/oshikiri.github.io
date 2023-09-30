@@ -2,6 +2,10 @@ body {
     background-color: black;
 }
 
+section {
+    padding-bottom: 200px;
+}
+
 @media (min-width: 800px) {
     body {
         width: 700px;
@@ -14,9 +18,12 @@ body {
     body {
         padding: 10px;
     }
+    img {
+        width: 100%;
+    }
 }
 
-h1, h2, h3, h4, p, ul, li, table {
+h1, h2, h3, h4, p, ul, li, table, div {
     color: lightgrey;
 }
 
@@ -58,10 +65,18 @@ h5:before {
     padding-bottom: 1ch;
 }
 
+/* disable useragent stylesheet */
+figure {
+    margin-inline-start: 1px;
+    margin-inline-end: 1px;
+}
+
 pre {
     white-space: pre-wrap;
     margin: 5px 0;
-    padding: 1ch;
+    padding: 1.5ch;
+    border: solid 1px lightgray;
+    border-radius: 15px;
 }
 
 code {
