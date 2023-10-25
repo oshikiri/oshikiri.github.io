@@ -73,6 +73,7 @@ figure {
 
 pre {
     white-space: pre-wrap;
+    overflow-wrap: break-word;
     margin: 5px 0;
     padding: 1.5ch;
     border: solid 1px lightgray;
@@ -80,6 +81,7 @@ pre {
 }
 
 code {
+    overflow-wrap: break-word;
     /* This is ayu-dark color */
     background-color: #0f1419;
 }
