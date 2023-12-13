@@ -261,7 +261,10 @@ const child = document.createElement(name);
 としていたところを
 
 ```js
-const child = document.createElementNS("http://www.w3.org/2000/svg", name);
+const child =
+  name === "svg"
+    ? document.createElementNS("http://www.w3.org/2000/svg", name)
+    : document.createElement(name);
 ```
 
 にすれば解決する。
@@ -272,16 +275,18 @@ const child = document.createElementNS("http://www.w3.org/2000/svg", name);
   path = "/images/build-your-own-d3/rect-appeared.png"
 ) }}
 
-なぜ `createElementNS` を使う必要があるか？
-`document.createElement("svg")` は `svg` という名前のHTML要素を作る[^createelement]のだが、SVGはHTML要素ではない（HTMLとは別の名前空間に属する）ので、`createElementNS` の第一引数で名前空間を明記する必要があるからだ。
+なぜ `createElement` ではなく `createElementNS` を使う必要があるか？
+ここで作りたいのはSVGの名前空間に属する `<svg>` なのだが、`document.createElement("svg")` だと `svg` という名前のHTML要素を作ってしまう[^createelement]からだ。
+そのため、SVGの名前空間に属する `<svg>` を作りたい場合は、`createElementNS` の第一引数で明示的に名前空間を指定する必要がある。
 
 - [svg - SVG: スケーラブルベクターグラフィック | MDN](https://developer.mozilla.org/ja/docs/Web/SVG/Element/svg)
 - [名前空間の速修講座 - SVG: スケーラブルベクターグラフィック | MDN](https://developer.mozilla.org/ja/docs/Web/SVG/Namespaces_Crash_Course)
 - [No `createElement` with SVG | webhint documentation](https://webhint.io/docs/user-guide/hints/hint-create-element-svg/)
 
-ちなみに、以下のコードではすべての要素にSVGの名前空間を指定しているが、本当は一番外側の `<svg>` のみに名前空間を指定すればいいらしい。
+[実際の append](https://d3js.org/d3-selection/modifying#selection_append) の実装では `append("svg")` の場合に名前空間として `http://www.w3.org/2000/svg` を使う実装になっているため、これをそのまま真似しておく。
+ちなみに、D3では[SVG以外の名前空間もサポートしている](https://d3js.org/d3-selection/namespaces)。
 
-[^createelement]: Document.createElementのドキュメントを注意深く読んでみると、たしかに「[HTML 文書において、 document.createElement() メソッドは tagName で指定された HTML 要素を生成し](https://developer.mozilla.org/ja/docs/Web/API/Document/createElement)」と書かれている。
+[^createelement]: Document.createElementのドキュメントを注意深く読んでみると、たしかに「[HTML 文書において、 document.createElement() メソッドは tagName で指定された HTML 要素を生成し](https://developer.mozilla.org/ja/docs/Web/API/Document/createElement)」と明記されている。
 
 一応ソースコード全体をまとめておく。
 
@@ -306,10 +311,10 @@ const child = document.createElementNS("http://www.w3.org/2000/svg", name);
         this.element = element;
       }
       append(name) {
-        const child = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          name,
-        );
+        const child =
+          name === "svg"
+            ? document.createElementNS("http://www.w3.org/2000/svg", name)
+            : document.createElement(name);
         this.element.append(child);
         return new Selection(child);
       }
