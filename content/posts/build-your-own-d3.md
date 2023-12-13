@@ -523,15 +523,11 @@ Selection の実装は [d3-selection](https://github.com/d3/d3-selection) リポ
 
 そもそも「D3が難しい」といったとき、「D3はグラフ描画ライブラリとして難しい」というふうに解釈されるが、
 D3のことを「グラフ描画ライブラリ」「チャートライブラリ」というとミスリーディングなのかなと思う。
-いやもちろん、D3はグラフを描画するために使うライブラリではあるのだが、ブラウザがSVGの描画を行っているためユーザーはSVGを意識する必要がある（一方で、通常のチャートライブラリの場合は最終的なグラフしか意識しない）という点でミスリーディングになると思う[^like-jquery]。
-もちろんこれは他の人も言っていることなので、おそらくそこまで間違ってはいないと思われる[^d3-is-not-chart-library]。
+いやもちろん、D3はグラフを描画するために使うライブラリではあるのだが、ブラウザがSVGの描画を行っているためユーザーはSVGを意識する必要がある（一方で、通常のチャートライブラリの場合は最終的なグラフしか意識しない）という点でミスリーディングになる。
 
-個人的には、JSONからSVGのグラフを生成するときに使える便利関数の集まり、くらいの印象を受けた。
-というのも、グラフ描画に関して面倒な部分をある程度共通化できてはいるものの、一部は隠蔽しきれていないからだ。
+実際、[公式ドキュメント](https://d3js.org/what-is-d3#d3-is-a-low-level-toolbox)でも、*"D3 is a low-level toolbox", "D3 is not a charting library in the traditional sense."* と書かれている[^d3-is-not-chart-library]。
 
-[^like-jquery]: jQueryをフロントエンドフレームワークというか？みたいな感じか？なにか違う気もする…
-
-[^d3-is-not-chart-library]: 検索してみると、「[D3はチャート・ライブラリではありません](https://postd.cc/what-d3js-is-not/)」などがヒットする。
+[^d3-is-not-chart-library]:
 え？でも普通にD3はグラフ描画ライブラリ/チャートライブラリって紹介されてない？と疑問に思ったので調べてみた。
 D3の紹介文を見てみると、["D3 (or D3.js) is a free, open-source JavaScript library for visualizing data."](https://github.com/d3/d3)だったり["The JavaScript library for bespoke data visualization"](https://d3js.org/)（bespokeに強調）だったりと明言を避けた書き方をしていて、chart library などといい切っていないことに気づく。
 なるほどねぇ。
