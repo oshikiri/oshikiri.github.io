@@ -11,7 +11,10 @@
     {{ page.title }}
   </h1>
   <div id="article-header">
-    <p class="subtitle"><strong>記事を書いた日</strong>: {{ page.date }}</p>
+    <p class="subtitle">
+      <strong>記事を書いた日</strong>: {{ page.date }}
+      (<a href="https://github.com/oshikiri/oshikiri.github.io/commits/master/content/posts/{{ page.slug }}.md">更新履歴</a>)
+    </p>
     {% if page.description %}
       <p>
         <b>要約</b>: {{ page.description }}
