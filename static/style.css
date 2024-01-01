@@ -80,7 +80,8 @@ pre {
     border-radius: 15px;
 }
 
-code {
+/* Zola syntax highlighting uses `data-lang` */
+code:not([data-lang]) {
     overflow-wrap: break-word;
     /* This is ayu-dark color */
     background-color: #0f1419;
