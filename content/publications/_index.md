@@ -3,6 +3,8 @@ title = "Publications"
 template = "index.html"
 +++
 
+* [Google Scholar](https://scholar.google.com/citations?user=-zuLgG0AAAAJ)
+
 ## Conference / workshop (refereed)
 1. Takamasa Oshikiri. 2017. **Segmentation-Free Word Embedding for Unsegmented Languages**. In Proceedings of the 2017 Conference on Empirical Methods in Natural Language Processing (EMNLP2017) (Volume 2: Short Papers), pages 767–772, Copenhagen, Denmark. Association for Computational Linguistics. [[pdf](http://aclweb.org/anthology/D17-1080), [bib](http://aclweb.org/anthology/D17-1080.bib), [code](https://github.com/oshikiri/w2v-sembei)]
     * Acceptance rate (short) : **18.4%**[^emnlp2017]
