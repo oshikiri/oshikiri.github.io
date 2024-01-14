@@ -1,29 +1,32 @@
 +++
 title = "D3を理解するために機能の一部を再実装してみる"
-date = "2023-09-30"
-description = "D3を使おうと思ったが、使用例やドキュメントを読むだけではどうしても理解できなかった。そこで、理解するために機能の一部を自作してみることにする。"
+date = "2024-01-14"
+description = "D3でグラフを描こうと思ったが、ドキュメントや使用例を読むだけではどうしても理解できなかった。そこで、理解するために機能の一部を自作してみることにする。"
 +++
 
 {% warning() %}
-  完成まで時間がかかりそうだったので、この記事は途中で公開している。
+  完成まで時間がかかりそうだったので、この記事は書いている途中で公開している。
 {% end %}
 
-## TL;DR
+## この記事の要約
 D3の難しさは、
 
-1. D3が出力するSVGを意識する必要がある。一方で、通常のチャートライブラリでは出力した画像やHTMLの中身を意識することはない
-2. 使うために必要になる事前知識が多い（JavaScript、HTML、SVG、…）
-2. D3特有のAPI（特にd3-selectionあたり）になれる必要がある
+1. 使う上でD3が出力するSVGを意識する必要がある。一方で、通常のチャートライブラリでは出力した画像やHTMLの中身を意識することはない
+2. JavaScript、HTML、SVG など使うために必要になる事前知識が多い
+3. D3特有のAPI、特にd3-selection に慣れる必要がある
 
-から来ている（と思う）ので、挙動を理解しつつ使うためにはそこを事前に抑えておく必要がある。
+から来ている（と思う）ので、内部の挙動を理解しつつ使うためにはこれらの項目を事前に抑えておく必要がある。
+
+これらについて理解するために、D3のAPIに沿って簡単なグラフを描画できるスクリプト [mini-d3.js](https://github.com/oshikiri/build-your-own-d3/blob/main/mini-d3.js) （[デモページ](https://oshikiri.github.io/build-your-own-d3/demo/bar_chart.html)）を作成した。
 
 
 ## はじめに {#introduction}
 ### この記事の背景 {#background}
 
+少し複雑な可視化をしようと思って
 [D3](https://github.com/d3/d3)（D3.js）の使い方を調べたが、難しくていまいち理解できなかった[^d3-is-difficult]。
-そこでこの記事では、D3の挙動を理解することを目的として、D3と同じインターフェースで同じグラフを描画できるようなライブラリを作ってみる[^build-your-own-x]。
-イメージとしては、D3のサンプルコードのうち、 `<script src="https://d3js.org/d3.v7.min.js"></script>` の部分を自作ライブラリに差し替えても動くようにしたい。
+そこでこの記事では、D3の挙動を理解することを目的として、D3と同じインターフェースで同じグラフを描画できるようなスクリプトを作ってみる[^build-your-own-x]。
+イメージとしては、D3のサンプルコードのうち、 `<script src="https://d3js.org/d3.v7.min.js"></script>` の部分を自作スクリプト `<script src="./mini-d3.js"></script>` に差し替えても動くようにする。
 もちろん、D3の機能すべてを再実装するのは現実的ではないので「主なサンプルコードをある程度動かすことができる」くらいの目標にしておく。
 
 
@@ -31,41 +34,43 @@ D3の難しさは、
 
 [^build-your-own-x]: 有名なツールやパッケージの中身を理解するためにはそれを再実装すればいい、と一部では言われていて、これを実践する記事は [build-your-own-x](https://github.com/codecrafters-io/build-your-own-x) という一大ジャンル？になっている。
 
+
 ### この記事の扱っている範囲
 この記事を書き始めてから気づいたが、D3の記事をゼロから書くといつまで経っても書き終わらないので、取り扱う項目を絞っておく必要がある。
+この記事で扱うこと/扱わないことを以下のように決めておく。
 
-**この記事で扱っていること**
+**この記事で扱うこと:**
 - D3の基本的なAPIの挙動・実装方法
 - D3っぽい挙動をするライブラリの作り方
 - 私がD3を解読していたときのメモ
 
-**この記事で扱っていないこと**
+**この記事で扱わないこと:**
 - D3の使い方[^d3-introduction]
 - D3のデータハンドリング（d3-array など）
 - d3-geoなどの発展的な可視化
 - JavaScript（特にDOM操作周り）、CSS、SVGなどに関する知識
 
-こう書いてみると、いったい想定読者は誰なんだろう？という疑問が浮かんでくる。
-この文はこの記事をある程度は書き終えたときに書いているが、まだよくわかっていない。
+こう書いてみると、想定読者はいったい誰なんだろう？という疑問が浮かんでくる。
+この文はこの記事をほぼ書き終えたときに書いているが、まだよくわかっていない。
 まあいいや。
 
+[^d3-introduction]: ここが怪しい場合は、[D3 Tips and Tricks v7.x by Malcolm Maclean](https://leanpub.com/d3-t-and-t-v7) あたりを読んでからこの記事を読むのが良いと思う
 
-[^d3-introduction]: [D3 Tips and Tricks v7.x by Malcolm Maclean](https://leanpub.com/d3-t-and-t-v7) あたりを読んでからこの記事を読むのが良いと思う
 
 ### 実行環境
 
 D3のバージョンについては、現在の最新版 ([v7.8.5](https://github.com/d3/d3/blob/v7.8.5)) をもとに記事を書く。
-ただし、この記事では基本的なAPIしか扱わないので、数年経ったくらいではそう影響を受けないと思われる。
-まあ数年前のアップデートで `attr` の使い方が大きく変わったという例はあるが、最近はD3もあまり更新されていないようだし多分大丈夫でしょう[^d3-selection-last-update]。
+ただし、この記事では基本的な機能しか扱わないので、数年経ったくらいではそう影響を受けないと思われる。
+まあ[2018年のアップデート](https://github.com/d3/d3/blob/main/CHANGES.md#changes-in-d3-50)で基本的なAPIの挙動が大きく変わったという例はあるが、ここ数年はD3もあまり更新されていないようだし[^d3-selection-last-update]多分大丈夫でしょう。
 
-また、このページにあるコードの動作確認は基本的にChrome v116で行った。
+また、このページにあるコードの動作確認はChrome v120で行った。
 
-[^d3-selection-last-update]: ちなみに後で出てくる d3-selection は[最終更新が2年前](https://github.com/d3/d3-selection/commit/91245ee124ec4dd491e498ecbdc9679d75332b49)だった
+[^d3-selection-last-update]: ちなみに後で出てくる d3-selection は2023-09-30時点では[最終更新が2年前](https://github.com/d3/d3-selection/commit/91245ee124ec4dd491e498ecbdc9679d75332b49)だった。
 
 ### この記事について
 
-この記事自体は[ここ](https://github.com/oshikiri/oshikiri.github.io/blob/master/content/posts/build-your-own-d3.md)にあるマークダウンなどから生成されている。
-また、最終的な実装と、この記事中にある `examples/~` はすべて [build-your-own-d3](https://github.com/oshikiri/build-your-own-d3) リポジトリに入っている。
+この記事自体は[GitHubにあるmarkdown](https://github.com/oshikiri/oshikiri.github.io/blob/master/content/posts/build-your-own-d3.md)から生成されている。
+また、最終的な実装は [build-your-own-d3](https://github.com/oshikiri/build-your-own-d3) リポジトリに入っている。
 
 
 ## 簡単な図形を描画する {#simple-diagrams}
@@ -75,12 +80,12 @@ D3のバージョンについては、現在の最新版 ([v7.8.5](https://githu
 ### 文字列を描画する {#hello-world-text}
 まずはじめに、`hello world` という文字列を画面上に描画するだけの処理を実装してみる。
 
-この処理をD3で実装しようとすると、以下のようなコードになる。
-これ以降、D3を使ってグラフを描画するコードを「D3バージョン」と呼ぶことにする。
+この処理をD3で実装しようとすると以下のようなコードになる。
+これ以降、オリジナルのD3の `https://d3js.org/d3.v7.min.js` を使ってグラフを描画するコードを「本家D3」と呼ぶことにする。
 
-一応あとのためにコメントで一行ずつ説明しておく。
+あとのためにコメントで一行ずつ説明しておく。
 
-{% with_caption(title="examples/hello-world/d3.html (D3バージョン)") %}
+{% with_caption(title="examples/hello-world/d3.html (本家D3)") %}
 ```html
 <!doctype html>
 <meta charset="utf-8" />
@@ -101,13 +106,13 @@ D3のバージョンについては、現在の最新版 ([v7.8.5](https://githu
 最後の `<script>` 内にあるJSが実行されると、`#chart` というIDがついている div 要素が更新され、次の図のように `chart` 内に `<div>hello world</div>` が追加される。
 
 {{ image(
-  title="hello-world (D3バージョン) の実行結果",
+  title="hello-world (本家D3) の実行結果",
   path="/images/build-your-own-d3/hello-world-d3.png"
 ) }}
 
-これをD3を使わずに再実装してみる。
+このサンプルで使われている `d3` を再実装してみる。
 
-まずコメントに書かれている内容を読んでみると、そのままJSで書けそうなことに気づく。
+まずコメントに書かれている内容を読んでみると、そのままJavaScriptで実装できそうだということに気づく。
 試しに書いてみる。
 
 {% with_caption(title="examples/hello-world/vanilla-js.html (Web APIを使うバージョン)") %}
@@ -128,7 +133,7 @@ D3のバージョンについては、現在の最新版 ([v7.8.5](https://githu
 ```
 {% end %}
 
-上記のコードをHTMLファイルとして保存してブラウザで開くと、D3バージョンと同じ挙動になっているのを確認できる。
+上記のコードをHTMLファイルとして保存してブラウザで開くと、本家D3バージョンと同じ挙動になっていることを確認できる。
 
 {{ image(
   title="hello-world (Web APIを使うバージョン) の実行結果",
@@ -138,10 +143,10 @@ D3のバージョンについては、現在の最新版 ([v7.8.5](https://githu
 さて、この記事の目的は「D3と同じインターフェースで同じような挙動をするライブラリを実装する」ということだった。
 そこで次にインターフェースを合わせてみる。
 
-D3バージョンのグラフ描画処理のコードを再度眺めてみると、
+本家D3バージョンのグラフ描画処理のコードを再度眺めてみると、
 `d3.select("#chart").append("div").text("hello world");` という、D3に特徴的なメソッドチェインを基本としたインターフェースになっていることがわかる。
 また `d3.select` の返り値は [@types/d3-selection によれば Selection らしい](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/61748a217350dddbef9842803adf8533a8b1e8b9/types/d3-selection/index.d.ts#L107-L121)。
-以上の情報をもとに、ひとまず次のように Selection クラスを追加してみる。
+以上の情報をもとに、ひとまず次のように Selection クラスを追加してみる[^original-d3-select]。
 
 {% with_caption(title="examples/hello-world/myd3.html (自作バージョン)") %}
 ```html
@@ -183,14 +188,16 @@ D3バージョンのグラフ描画処理のコードを再度眺めてみると
 ```
 {% end %}
 
-これをHTMLとして保存しブラウザで開くと、D3バージョンと同じ挙動になっているのを確認できる。
+これをHTMLとして保存しブラウザで開くと、本家D3バージョンと同じ挙動になっているのを確認できる。
 
-これ以降では、この実装を徐々に拡張していって、描ける図形やグラフを増やしていくことにする。
+これ以降では、この実装を徐々に拡張して描ける図形やグラフを増やしていく。
+
+[^original-d3-select]: ちなみに `d3.select` の[実際の実装](https://github.com/d3/d3-selection/blob/v3.0.0/src/select.js) も自作バージョンと同様に [`Selection`](https://github.com/d3/d3-selection/blob/v3.0.0/src/selection/index.js) を生成して返すだけの関数になっている。
 
 
 ### 長方形を描画する {#svg-rect}
 
-D3で長方形を書くコードは以下の通りである。
+本家D3で長方形を書くコードは以下の通りである。
 
 {% with_caption(title="examples/rect/d3.html") %}
 ```html
@@ -233,7 +240,7 @@ D3で長方形を書くコードは以下の通りである。
 </div>
 ```
 
-一応解説しておくと、500x500のSVG要素を作成してその中に `g` 要素を作成、さらにその中に (200, 200) の位置に 50x20 で青で塗りつぶされた長方形を描画している。
+一応解説しておくと、500x500のSVG要素を作成してその中に `g` 要素を作成、さらにその中に (200, 200) の位置に 50x20 の青で塗りつぶされた長方形を描画している。
 
 ここでは新しく `attr` というメソッドを使っているため、これを実装する必要がある。
 Selection クラスに以下のような `attr` を追加してみる。
@@ -475,62 +482,562 @@ const d3 = {
 
 
 
-{% warning() %}
-  ここから先はまだ書けていない。
-  実装は一応できているのだが、リファクタリングが必要なのと、説明の形にまとめるのが難しかったので書く作業が止まっている。
+## パッケージとして整理する？ {#setup-package}
+コード量が増えてきたので今のうちにパッケージの形に整えておきたい。
+しかし、ステップバイステップで説明を進める都合上、パッケージの形にまとめると、build-your-own-d3 リポジトリ内に大量の package.json を作る必要があり面倒になる。
+そのためこの記事では、多少無理をしつつ、以下のように単一のJSファイルにすべて実装を詰め込む形で話を進める。
+
+{% with_caption(title="examples/setup-package/myd3.html") %}
+```js
+<!doctype html>
+<meta charset="utf-8" />
+<body>
+  <div id="chart"></div>
+
+  <script src="./myd3.js"></script>
+  <script>
+    const svg = d3
+      .select("#chart")
+      .append("svg")
+      .attr("width", 500)
+      .attr("height", 500)
+      .append("g");
+
+    d3.json("./data.json").then((data) => {
+      for (const d of data) {
+        svg
+          .append("rect")
+          .attr("class", "bar")
+          .attr("x", d.x)
+          .attr("y", d.y)
+          .attr("width", d.width)
+          .attr("height", d.height);
+      }
+    });
+  </script>
+</body>
+```
 {% end %}
 
+{% with_caption(title="examples/setup-package/myd3.js") %}
+```js
+const d3 = {
+  select: function (selector) {
+    const el = document.querySelector(selector);
+    return new Selection(el);
+  },
+  async json(path) {
+    return fetch(path)
+      .then((response) => response.json())
+  },
+};
 
-## パッケージとして整理する {#setup-package}
-コード量が増えてきたので、今のうちにパッケージの形に整えておく。
+class Selection {
+  element;
+  constructor(element) {
+    this.element = element;
+  }
+  append(name) {
+    const child = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      name,
+    );
+    this.element.append(child);
+    return new Selection(child);
+  }
+  text(content) {
+    const txt = document.createTextNode(content);
+    this.element.append(txt);
+    return this;
+  }
+  attr(key, value) {
+    this.element.setAttribute(key, value);
+    return this;
+  }
+}
+```
+{% end %}
 
+もしパッケージとして整備したい場合は、実際のD3の構成が参考になる。
 [実際のD3の構成](https://github.com/d3/d3/blob/v7.8.5/src/index.js)を見てみると、おおまかな機能ごとにリポジトリが別れていて、 d3/d3リポジトリですべてを読み込む形になっている。
-今回の実装ではリポジトリを分けるほどでもないので、ディレクトリに分けた上で 一番上の index.ts で `export * from "./selection";` のように export する形にしておく。
 
+私も最初に TypeScript で自作D3を実装したときは、本家D3と同様にディレクトリに分けた上で、一番上の index.ts で `export * from "./selection";` のように export する形にした。
 
-## Selection を実装する {#selection-class}
-
-これまでの例でも使われていた[`d3.select`](https://github.com/d3/d3-selection/blob/v3.0.0/src/select.js) （document.body から対象の要素を拾ってくる）は、[`Selection`](https://github.com/d3/d3-selection/blob/v3.0.0/src/selection/index.js) を生成して返すだけの関数になっている。
-`@types/d3` を見てみると、`d3.select` や `d3.selectionAll` 以降につながっているメソッドはすべて Selection から生えていることがわかる。
-つまり、これまで使われてきたようなD3特有の操作（append, attr, text) は Selection のメソッドとして実装されているので、D3を理解するためには Selection を理解する必要がある。
-
-
-### d3-selection とは {#d3-selection}
-Selection の実装は [d3-selection](https://github.com/d3/d3-selection) リポジトリにある。
 
 
 ## 棒グラフを描画する {#bar-chart}
+
+このセクションでは、最終的に以下のような棒グラフ ([デモページ](https://oshikiri.github.io/build-your-own-d3/demo/bar_chart.html)) が描けるようになることを目標にして実装を進めていく。
 
 {{ image (
   title = "自作バージョンのD3で描画した棒グラフ",
   path = "/images/build-your-own-d3/bar-chart.png"
 ) }}
 
-### 棒グラフの棒を描画する {#bar-of-bar-chart}
-### スケーリングの処理を実装する {#d3-scale}
-### 軸を描画する {#bar-chart-axis}
-### 目盛りを追加する (1) {#ticks-1}
+グラフは「D3 Tips and Tricks v7.x」で使われていたもので、元データは[こちらのJSON](https://github.com/oshikiri/build-your-own-d3/blob/main/demo/data/sales.json)にアップロード済み。
 
-## 線グラフを描画する {#line-chart}
+これ以降はかなり込み入った実装になるため、本家D3の実装で必要なものだけを抜き出す形で実装を進める。
+特にこのセクションでは、 [d3-selection](https://github.com/d3/d3-selection) の実装を参考に実装を進めていく。
+
+
+### 棒グラフの棒を描画する {#bar-chart-bars}
+
+スケーリングの処理や目盛りなどは一旦無視して、下図のように棒グラフの棒の部分だけをまず描いてみる。
+
+{{ image (
+  title = "自作D3で描画した棒グラフ（スケーリングなし、heightがsalesの値になっている）",
+  path = "/images/build-your-own-d3/bars-without-scaling.png"
+) }}
+
+まずは本家D3を使ってこれを描画するコードを作る。
+
+{% with_caption(title="examples/bar-chart/bars/myd3.html") %}
+```html
+<!doctype html>
+<meta charset="utf-8" />
+<body>
+  <div id="chart"></div>
+
+  <!-- <script src="./myd3.js"></script> -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  <script>
+    // スケーリングを実装していないので、とりあえず sales の最大値を埋めておく
+    const height = 59;
+    const width = 960;
+    const barwidth = 50;
+
+    const svg = d3
+      .select("#chart")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height)
+      .append("g");
+
+    d3.json("./../sales.json").then((data) => {
+      svg
+        .selectAll(".bar")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", function (d) {
+          return xScale(d.salesperson);
+        })
+        .attr("width", barwidth)
+        .attr("y", function (d) {
+          return yScale(d.sales);
+        })
+        .attr("height", function (d) {
+          return height - yScale(d.sales);
+        });
+
+      svg
+        .append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(xScale));
+
+      svg.append("g").call(d3.axisLeft(yScale));
+    });
+
+    // 仮実装
+    let called = -1;
+    function xScale(name) {
+      called += 1;
+      return barwidth * called;
+    }
+    function yScale(y) {
+      return 59 - y;
+    }
+  </script>
+</body>
+```
+{% end %}
+
+自作D3でもこのサンプルコードが動くようにするためには、`d3.selectAll` `Selection.data` `Selection.enter` を実装し、さらに `Selection.attr` がバインドしたデータを使えるようにする必要がある。
+本家 d3-selection の実装をもとに以下のように実装を追加してみる。
+
+{% with_caption(title="examples/bar-chart/bars/myd3.js") %}
+```js
+const d3 = {
+  select: function (selector) {
+    const element = document.querySelector(selector);
+    return new Selection([[element]], [document.documentElement]);
+  },
+  json: async function (path) {
+    return fetch(path).then((response) => response.json());
+  },
+  scaleBand,
+  scaleLinear,
+  axisLeft,
+  axisBottom,
+};
+
+class Selection {
+  #groups;
+  #parents;
+  #enter;
+
+  constructor(groups, parents) {
+    this.#groups = groups;
+    this.#parents = parents;
+  }
+
+  append(name) {
+    return this.select(function () {
+      const child = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        name,
+      );
+      child.__data__ = this.__data__;
+      return this.appendChild(child);
+    });
+  }
+
+  select(selectorOrFunction) {
+    const selectFunction = this.#makeSelectFunction(selectorOrFunction);
+    const subgroups = this.#groups.map((group) =>
+      group.map((node, i) => {
+        if (node === null) {
+          return undefined;
+        }
+        const subnode = selectFunction.call(node, node.__data__, i, group);
+        if ("__data__" in node) {
+          subnode.__data__ = node.__data__;
+        }
+        return subnode;
+      }),
+    );
+
+    return new Selection(subgroups, this.#parents);
+  }
+
+  #makeSelectFunction(selectorOrFunction) {
+    if (typeof selectorOrFunction == "string") {
+      return function () {
+        return this.querySelector(selectorOrFunction);
+      };
+    } else {
+      return selectorOrFunction;
+    }
+  }
+
+  attr(key, valueOrFunction) {
+    return this.#each(function (__data__) {
+      const value = Selection.getValue(valueOrFunction, __data__);
+      this.setAttribute(key, value);
+      return this;
+    });
+  }
+
+  static getValue(valueOrFunction, __data__) {
+    if (typeof valueOrFunction == "function") {
+      return valueOrFunction(__data__);
+    } else if (["number", "string"].includes(typeof valueOrFunction)) {
+      return String(valueOrFunction);
+    } else {
+      return valueOrFunction.apply(__data__);
+    }
+  }
+
+  #each(callback) {
+    const groups = this.#groups.map(function (group) {
+      return group.map(function (node, i) {
+        return callback.call(node, node.__data__, i);
+      });
+    });
+    return new Selection(groups, this.#parents);
+  }
+
+  selectAll(selector) {
+    const subgroups = [];
+    const parents = [];
+    this.#groups.forEach((group) => {
+      group.forEach((node) => {
+        subgroups.push(Array.from(node.querySelectorAll(selector)));
+        parents.push(node);
+      });
+    });
+    return new Selection(subgroups, parents);
+  }
+
+  data(__data__) {
+    const groupsLength = this.#groups.length;
+    const dataLength = __data__.length;
+    const enter = new Array(groupsLength);
+    for (let i = 0; i < groupsLength; i++) {
+      enter[i] = new Array(dataLength);
+      Selection.bindIndex(
+        this.#parents[i],
+        this.#groups[i],
+        enter[i],
+        __data__,
+      );
+    }
+    this.#enter = enter;
+    return this;
+  }
+
+  static bindIndex(parent, group, enter, data) {
+    for (let i = 0; i < data.length; i++) {
+      if (i < group.length) {
+        group[i].__data__ = data[i];
+      } else {
+        enter[i] = new EnterNode(parent, data[i]);
+      }
+    }
+  }
+
+  enter() {
+    return new Selection(this.#enter || this.#groups, this.#parents);
+  }
+
+  call(callback) {
+    arguments[0] = this;
+    callback.apply(null, arguments);
+    return this;
+  }
+}
+
+class EnterNode {
+  constructor(parent, __data__) {
+    this.parent = parent;
+    this.__data__ = __data__;
+  }
+  appendChild(child) {
+    return this.parent.appendChild(child);
+  }
+}
+
+function scaleBand() {}
+
+function scaleLinear() {}
+
+function axisLeft() {
+  return function () {};
+}
+
+function axisBottom() {
+  return function () {};
+}
+```
+{% end %}
+
+
+### スケーリングの処理を実装する {#bar-chart-scale}
+
+ここでは、D3のコードで先ほど省略していた `d3.scaleBand` などのスケーリングの処理を実装する。
+D3を使ってグラフを描画するコードは以下のとおり。
+
+```html
+<!doctype html>
+<meta charset="utf-8" />
+<style>
+  .bar {
+    fill: steelblue;
+  }
+</style>
+<body>
+  <!-- <script src="https://d3js.org/d3.v7.min.js"></script> -->
+  <script src="./myd3.js"></script>
+
+  <script>
+    const svgWidth = 960;
+    const svgHeight = 500;
+    const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+    const width = svgWidth - margin.left - margin.right;
+    const height = svgHeight - margin.top - margin.bottom;
+
+    const xScale = d3.scaleBand().range([0, width]).padding(0.1);
+    const yScale = d3.scaleLinear().range([height, 0]);
+
+    const svg = d3
+      .select("body")
+      .append("svg")
+      .attr("width", svgWidth)
+      .attr("height", svgHeight)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    d3.json("../sales.json").then(function (data) {
+      xScale.domain(
+        data.map(function (d) {
+          return d.salesperson;
+        }),
+      );
+      yScale.domain([
+        0,
+        Math.max(
+          ...data.map(function (d) {
+            return d.sales;
+          }),
+        ),
+      ]);
+
+      svg
+        .selectAll(".bar")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", function (d) {
+          return xScale(d.salesperson);
+        })
+        .attr("width", xScale.bandwidth())
+        .attr("y", function (d) {
+          return yScale(d.sales);
+        })
+        .attr("height", function (d) {
+          return height - yScale(d.sales);
+        });
+
+      svg
+        .append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(xScale));
+
+      svg.append("g").call(d3.axisLeft(yScale));
+    });
+  </script>
+</body>
+```
+
+この描画処理を実行できるようにするために、自作D3のほうに追加で `scaleBand` と `scaleLinear` を実装する必要がある。
+長くなるのでここでは `scaleLinear` のみ載せておく。
+
+{% with_caption(title="mini-d3.js から抜粋した scaleLinear の実装") %}
+```js
+function scaleLinear() {
+  const scale = function (x) {
+    const [xl, xh] = scale._domain;
+    const [yl, yh] = scale._range;
+    return yl + ((yh - yl) * (x - xl)) / (xh - xl);
+  };
+  scale._range = [];
+  scale._domain = [];
+  scale.range = function (_range) {
+    this._range = _range;
+    return this;
+  };
+  scale.domain = function (_domain) {
+    this._domain = _domain;
+    return this;
+  };
+  scale.getTickPoints = function () {
+    return range(this._domain[0], this._domain[1], 5);
+  };
+  return scale;
+}
+
+function range(l, h, stepsize) {
+  const values = [];
+  for (let current = l; current <= h; current += stepsize) {
+    values.push(current);
+  }
+  return values;
+}
+```
+{% end %}
+
+この実装を自作D3に追加したあと、HTMLをブラウザで開くと以下のようなグラフが表示される。
+
+{{ image (
+  title = "自作D3で描画した棒グラフ（スケーリングあり）",
+  path = "/images/build-your-own-d3/bars-with-scaling.png"
+) }}
+
+
+### 軸と目盛りを描画する {#bar-chart-axis}
+
+棒グラフの棒の部分は描画できたので、残りの軸と目盛りを描画する関数 `axisLeft` `axisBottom` を実装する。
+
+ざっくり言ってしまうと軸の線を引いて適切な位置にテキストを配置するだけだが、雑に実装してもわりと長くなる。
+そのため、ここでは `axisLeft` のみを載せておく。
+
+{% with_caption(title="mini-d3.js から抜粋した axisLeft の実装") %}
+```js
+const tickLength = 6;
+const tickLineWidth = 0.5;
+
+function axisLeft(scale) {
+  return function (axisRoot) {
+    const mainLineLength = Math.abs(scale._range[1] - scale._range[0]);
+    const valueLine =
+      `M-${tickLength},${mainLineLength + tickLineWidth} ` +
+      `H${tickLineWidth} V${tickLineWidth} H-${tickLength}`;
+
+    axisRoot
+      .attr("fill", "none")
+      .attr("font-size", "10")
+      .attr("font-family", "sans-serif")
+      .attr("text-anchor", "end");
+    axisRoot
+      .append("path")
+      .attr("class", "domain")
+      .attr("stroke", "currentColor")
+      .attr("d", valueLine);
+
+    const ticks = axisRoot
+      .selectAll(".tick")
+      .data(scale.getTickPoints())
+      .enter()
+      .append("g")
+      .attr("class", "tick")
+      .attr("opacity", "1")
+      .attr("transform", (d) => `translate(0, ${scale(d)})`);
+
+    ticks.append("line").attr("stroke", "currentColor").attr("x2", -tickLength);
+    ticks
+      .append("text")
+      .attr("fill", "currentColor")
+      .attr("x", -9)
+      .attr("dy", "0.32em")
+      .text((d) => d);
+
+    return axisRoot;
+  };
+}
+```
+{% end %}
+
+最終的なコードとデモページはこちら:
+
+- [mini-d3.js](https://github.com/oshikiri/build-your-own-d3/blob/main/mini-d3.js)
+- [demo/bar_chart.html](https://oshikiri.github.io/build-your-own-d3/demo/bar_chart.html)
+
+マジックナンバーが何箇所か出現していることからもわかるとおり、かなり限定的な実装にはなっているものの、たった約300行で棒グラフが描画できた。
+
+
+## 折れ線グラフを描画する {#line-chart}
+
+[D3 Tips and Tricks v7.x](https://leanpub.com/d3-t-and-t-v7) で扱われている他のグラフも描画できるようにしたい。
+詳細は省略するが、例えば `d3.timeParse` や `d3.scaleTime` などを追加で実装すると、以下のような折れ線グラフが書けるようになる。
 
 {{ image (
   title = "自作バージョンのD3で描画した折れ線グラフ",
   path = "/images/build-your-own-d3/line-chart.png"
 ) }}
 
-### 目盛りを追加する (2) {#ticks-2}
+「軸と目盛りを描画する」の実装を見ると想像がつくと思うが、これ以降は込み入ってくるので必要なコード量がかなり増えてくる。
+ここまで理解できればもう本家D3のソースコードを読んだほうが理解が早いと思うので、これ以降は読者の課題ということにしておきたい。
 
+現状の実装で足りていない部分を一応列挙しておく。
+
+- 目盛りの実装。現状の実装ではかなり省略されているので、例えば先ほどのグラフではy軸のtickの間隔が63刻みと中途半端になっている。
+- `d3.csv` や `d3.max` などデータハンドリングのよく使われる機能
+- その他実装を省略してマジックナンバーでごまかしている部分
 
 
 ## 最後に
 
 ### D3とはなにか
 
-そもそも「D3が難しい」といったとき、「D3はグラフ描画ライブラリとして難しい」というふうに解釈されるが、
-D3のことを「グラフ描画ライブラリ」「チャートライブラリ」というとミスリーディングなのかなと思う。
-いやもちろん、D3はグラフを描画するために使うライブラリではあるのだが、ブラウザがSVGの描画を行っているためユーザーはSVGを意識する必要がある（一方で、通常のチャートライブラリの場合は最終的なグラフしか意識しない）という点でミスリーディングになる。
+そもそも「D3が難しい」といったとき、「D3は可視化ライブラリとして難しい」というふうに解釈されるが、
+D3のことを「可視化ライブラリ」「チャートライブラリ」というとミスリーディングなのかなと思う。
+いやもちろん、D3はグラフを描画するために使うライブラリではあるのだが、D3を扱う上ではユーザーはSVGを意識する必要があって、
+その一方で通常の可視化ライブラリの場合はグラフの中身の構造を意識しなくてよい、という点でD3は他の有名な可視化ライブラリとは大きく異なる。
 
-実際、[公式ドキュメント](https://d3js.org/what-is-d3#d3-is-a-low-level-toolbox)でも、*"D3 is a low-level toolbox", "D3 is not a charting library in the traditional sense."* と書かれている[^d3-is-not-chart-library]。
+記事を書いているときに改めて調べて気づいたが、[公式ドキュメント](https://d3js.org/what-is-d3#d3-is-a-low-level-toolbox)でも *"D3 is a low-level toolbox", "D3 is not a charting library in the traditional sense."* と書かれている[^d3-is-not-chart-library]。
 
 [^d3-is-not-chart-library]:
 え？でも普通にD3はグラフ描画ライブラリ/チャートライブラリって紹介されてない？と疑問に思ったので調べてみた。
@@ -544,20 +1051,22 @@ D3をチャートライブラリではなくSVGを生成するライブラリと
 この記事を書いているときに思いついた理由を列挙してみる。
 
 - 命名や定義が難しい
-  - ギリギリまで文字数を削るような命名をしている (ex. `attr`)[^d3-naming]
-  - 1つの関数でいろいろな機能（例えば getter/setter）をまとめて表現していたりする
-    - 例えば、[selection.datum](https://github.com/d3/d3-selection#selection_datum) は引数の型（undefined, value, null, function）によってそれぞれ挙動が変わるのだが、それを文章だけで説明されるのはしんどい。
-- D3はJavaScriptで書かれているので、定義ジャンプが使えない。`@types/d3` を導入すれば一応型と関数の説明は読めるが、実装に飛ぶことはできない[^rewrite-in-typescript]。
-- d3-selection が難しい
-  - ドキュメントと実装とテストを読んで、ようやく理解できた関数がいくつか
-- ~~コピペしてそのまま動くコードがほしいのに、Observable のコード（そのままでは流用しづらい）しか出てこない~~
+  - ギリギリまで文字数を削るような命名をしている (例えば `attr` や `data`)[^d3-naming]
+  - 1つの関数でいろいろな機能（例えば getter/setter）をまとめて表現していたりする。
+    例えば、[selection.datum](https://github.com/d3/d3-selection#selection_datum) は引数の型（undefined, value, null, function）によってそれぞれ挙動が変わるのだが、それを文章だけで説明されるのはしんどい。
+- エディタ上でドキュメントの閲覧や補完をするのが難しい。ただし、`@types/d3` を導入すれば一応型と関数の説明はエディタから簡単に開くことができる[^rewrite-in-typescript]。
+- d3-selection が難しい。
+  ドキュメントと実装とテストを読んで、ようやく理解できた関数がいくつかあった
+- コピペしてそのまま動くコードがほしいのに、Observable のコード（そのままでは流用しづらい）しか出てこない
 
-[^d3-naming]: メソッド名を短くしたいというのも理解できなくはない。
-しかし、細かい部分を調整したり、複雑な可視化を行えたりする、というD3の特性上、命名に関しては短くすることより、どちらかといえば冗長気味にしたほうがいいケースが多いと思う。
-例えば、PythonやRの日々のデータハンドリングの途中で行う可視化（読み返されることを考慮する必要がほぼない）と、ウェブサイトで大きく表示される一点ものの複雑な可視化（書かれたあとにメンテナンスのために読み返されることが多い）だと、前者であれば簡潔なほうがよさそうだが、後者であれば冗長気味になっても可読性が高いほうがいいだろう。
+とはいえ、じゃあどうすればとっつきやすくなるか？と聞かれると返答に困る[^d3-improvement]ので、頑張ってD3に慣れるしかなさそうだ。
 
-[^rewrite-in-typescript]: [TypeScriptで型を付けようという提案は上がっていたが、2018年に一旦却下されている](https://github.com/d3/d3/issues/3284)。
+[^d3-naming]: メソッド名を短くしたいというのも理解できなくはないが、
+細かい部分を調整したり、複雑な可視化を行えたりする、というD3の特性上、命名に関しては短くすることより、どちらかといえば冗長気味にしたほうがいいケースが多いと思う。
+例えば、日々のデータハンドリングの途中で行う可視化（読み返されることを考慮する必要がほぼない）と、ウェブサイトで大きく表示される一点ものの複雑な可視化（書かれたあとにメンテナンスのために読み返されることが多い）だと、前者であれば簡潔なほうがよさそうだが、後者であれば冗長気味になっても可読性が高いほうがいいだろう。
+
+[^rewrite-in-typescript]: [TypeScriptで型を付けようという提案が2018年に上がっているが却下されている](https://github.com/d3/d3/issues/3284)。
 却下されるのは意外だなと最初は思ったが、d3配下の一つ一つのリポジトリはわりと小さいということもあって、最悪型なしでもなんとか理解できる、というのはあるかもしれない。
-あとはD3はTSより前からあるし（？）。
-コード量少ないから書き換えるPRを投げてみようかなとも思ったが、数年前に却下されている時点でマージされなさそう。
-ただし、却下した本人が直近で作っているライブラリは[一部TypeScriptが導入されている](https://github.com/observablehq/plot/issues/401)ようなので、今再度提案したら通る可能性はあるのかもしれない。
+
+[^d3-improvement]: 関数名をもう少し長めにして、TypeScriptで型をつける、くらいでエンドユーザーの使用感はわりと改善しそうな気もするがどうだろうか？
+まあそれくらいの違いだったら、D3の資産を捨ててまで別ライブラリに移行するほどでもなさそう。
