@@ -85,7 +85,7 @@ D3のバージョンについては、現在の最新版 ([v7.8.5](https://githu
 
 あとのためにコメントで一行ずつ説明しておく。
 
-{% with_caption(title="examples/hello-world/d3.html (本家D3)") %}
+{% with_caption(title="demo/insert-text/d3.html (本家D3)") %}
 ```html
 <!doctype html>
 <meta charset="utf-8" />
@@ -115,7 +115,7 @@ D3のバージョンについては、現在の最新版 ([v7.8.5](https://githu
 まずコメントに書かれている内容を読んでみると、そのままJavaScriptで実装できそうだということに気づく。
 試しに書いてみる。
 
-{% with_caption(title="examples/hello-world/vanilla-js.html (Web APIを使うバージョン)") %}
+{% with_caption(title="demo/insert-text/vanilla-js.html (Web APIを使うバージョン)") %}
 ```html
 <!doctype html>
 <meta charset="utf-8" />
@@ -148,7 +148,7 @@ D3のバージョンについては、現在の最新版 ([v7.8.5](https://githu
 また `d3.select` の返り値は [@types/d3-selection によれば Selection らしい](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/61748a217350dddbef9842803adf8533a8b1e8b9/types/d3-selection/index.d.ts#L107-L121)。
 以上の情報をもとに、ひとまず次のように Selection クラスを追加してみる[^original-d3-select]。
 
-{% with_caption(title="examples/hello-world/myd3.html (自作バージョン)") %}
+{% with_caption(title="demo/insert-text/myd3.html (自作バージョン)") %}
 ```html
 <!doctype html>
 <meta charset="utf-8" />
@@ -187,6 +187,9 @@ D3のバージョンについては、現在の最新版 ([v7.8.5](https://githu
 </body>
 ```
 {% end %}
+
+- [code](https://github.com/oshikiri/build-your-own-d3/blob/main/demo/insert-text/myd3.html)
+- [demo](https://www.oshikiri.org/build-your-own-d3/demo/insert-text/myd3.html)
 
 これをHTMLとして保存しブラウザで開くと、本家D3バージョンと同じ挙動になっているのを確認できる。
 
