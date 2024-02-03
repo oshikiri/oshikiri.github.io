@@ -202,7 +202,7 @@ D3のバージョンについては、現在の最新版 ([v7.8.5](https://githu
 
 本家D3で長方形を書くコードは以下の通りである。
 
-{% with_caption(title="examples/rect/d3.html") %}
+{% with_caption(title="demo/rectangle/d3.html") %}
 ```html
 <!doctype html>
 <meta charset="utf-8" />
@@ -271,10 +271,10 @@ const child = document.createElement(name);
 としていたところを
 
 ```js
-const child =
-  name === "svg"
-    ? document.createElementNS("http://www.w3.org/2000/svg", name)
-    : document.createElement(name);
+const child = document.createElementNS(
+  "http://www.w3.org/2000/svg",
+  name,
+);
 ```
 
 にすれば解決する。
@@ -293,14 +293,14 @@ const child =
 - [名前空間の速修講座 - SVG: スケーラブルベクターグラフィック | MDN](https://developer.mozilla.org/ja/docs/Web/SVG/Namespaces_Crash_Course)
 - [No `createElement` with SVG | webhint documentation](https://webhint.io/docs/user-guide/hints/hint-create-element-svg/)
 
-[実際の append](https://d3js.org/d3-selection/modifying#selection_append) の実装では `append("svg")` の場合に名前空間として `http://www.w3.org/2000/svg` を使う実装になっているため、これをそのまま真似しておく。
+[実際の append](https://d3js.org/d3-selection/modifying#selection_append) の実装では `append("svg")` の場合に名前空間として `http://www.w3.org/2000/svg` を使い、そうでない場合も親要素の名前空間を引き継ぐ実装になっている。
 ちなみに、D3では[SVG以外の名前空間もサポートしている](https://d3js.org/d3-selection/namespaces)。
 
 [^createelement]: Document.createElementのドキュメントを注意深く読んでみると、たしかに「[HTML 文書において、 document.createElement() メソッドは tagName で指定された HTML 要素を生成し](https://developer.mozilla.org/ja/docs/Web/API/Document/createElement)」と明記されている。
 
 一応ソースコード全体をまとめておく。
 
-{% with_caption(title="examples/rect/myd3-createelementns.html") %}
+{% with_caption(title="demo/rectangle/myd3.html") %}
 ```html
 <!doctype html>
 <meta charset="utf-8" />
@@ -321,10 +321,10 @@ const child =
         this.element = element;
       }
       append(name) {
-        const child =
-          name === "svg"
-            ? document.createElementNS("http://www.w3.org/2000/svg", name)
-            : document.createElement(name);
+        const child = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          name,
+        );
         this.element.append(child);
         return new Selection(child);
       }
@@ -358,6 +358,9 @@ const child =
 </body>
 ```
 {% end %}
+
+- [code](https://github.com/oshikiri/build-your-own-d3/blob/main/demo/rectangle/myd3.html)
+- [demo](https://www.oshikiri.org/build-your-own-d3/demo/rectangle/myd3.html)
 
 
 ### 折れ線を描画する {#svg-path}
