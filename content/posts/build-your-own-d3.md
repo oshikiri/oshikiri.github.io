@@ -6,6 +6,12 @@ description = "D3でグラフを描こうと思ったが、ドキュメントや
 
 {% warning() %}
   完成まで時間がかかりそうだったので、この記事は書いている途中で公開している。
+  残りのTODOを今思いつく範囲で書いておく。
+
+  - build-your-own-d3 リポジトリに上がっていないサンプルコードがある
+  - d3-selection が難しいと言っているわりに Selection の説明を書く前に力尽きている
+  - build-your-own-d3 にテストを追加する
+  - その他細かい校正
 {% end %}
 
 ## この記事の要約
@@ -13,7 +19,7 @@ D3の難しさは、
 
 1. 使う上でD3が出力するSVGを意識する必要がある。一方で、通常のチャートライブラリでは出力した画像やHTMLの中身を意識することはない
 2. JavaScript、HTML、SVG など使うために必要になる事前知識が多い
-3. D3特有のAPI、特にd3-selection に慣れる必要がある
+3. D3特有のAPI、特に d3-selection に慣れる必要がある
 
 から来ている（と思う）ので、内部の挙動を理解しつつ使うためにはこれらの項目を事前に抑えておく必要がある。
 
@@ -565,10 +571,12 @@ class Selection {
 {% end %}
 
 もしパッケージとして整備したい場合は、実際のD3の構成が参考になる。
-[実際のD3の構成](https://github.com/d3/d3/blob/v7.8.5/src/index.js)を見てみると、おおまかな機能ごとにリポジトリが別れていて、 d3/d3リポジトリですべてを読み込む形になっている。
+[実際のD3の構成](https://github.com/d3/d3/blob/v7.8.5/src/index.js)を見てみると、おおまかな機能ごとにリポジトリが別れていて、 d3/d3リポジトリですべてを読み込む形になっている[^d3-adopt-a-monorepo]。
 
 私も最初に TypeScript で自作D3を実装したときは、本家D3と同様にディレクトリに分けた上で、一番上の index.ts で `export * from "./selection";` のように export する形にした。
 
+[^d3-adopt-a-monorepo]: ただしこれについては今後変わる可能性がある:
+  [Adopt a monorepo · Issue #3791 · d3/d3](https://github.com/d3/d3/issues/3791)
 
 
 ## 棒グラフを描画する {#bar-chart}
