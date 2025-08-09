@@ -292,7 +292,7 @@ const child = document.createElementNS(
 ) }}
 
 なぜ `createElement` ではなく `createElementNS` を使う必要があるか？
-ここで作りたいのはSVGの名前空間に属する `<svg>` なのだが、`document.createElement("svg")` だと `svg` という名前のHTML要素を作ってしまう[^createelement]からだ。
+ここで作りたいのはSVG名前空間に属する `<svg>` なのだが、`document.createElement("svg")` だと HTML名前空間の `svg` 要素を作ってしまう[^createelement]からだ。
 そのため、SVGの名前空間に属する `<svg>` を作りたい場合は、`createElementNS` の第一引数で明示的に名前空間を指定する必要がある。
 
 - [svg - SVG: スケーラブルベクターグラフィック | MDN](https://developer.mozilla.org/ja/docs/Web/SVG/Element/svg)
