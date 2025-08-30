@@ -87,7 +87,6 @@ code:not([data-lang]) {
     background-color: #0f1419;
 }
 
-/* explicit selectors for better browser support */
 .tableofcontent > p {
     margin-bottom: 0;
 }
