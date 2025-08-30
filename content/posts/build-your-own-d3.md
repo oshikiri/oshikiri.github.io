@@ -5,13 +5,8 @@ description = "D3でグラフを描こうと思ったが、ドキュメントや
 +++
 
 {% warning() %}
-  完成まで時間がかかりそうだったので、この記事は書いている途中で公開している。
-  残りのTODOを今思いつく範囲で書いておく。
-
-  - build-your-own-d3 リポジトリに上がっていないサンプルコードがある
-  - d3-selection が難しいと言っているわりに Selection の説明を書く前に力尽きている
-  - build-your-own-d3 にテストを追加する
-  - その他細かい校正
+  GPT-5に校正してもらってから英訳したバージョン:
+  <https://github.com/oshikiri/build-your-own-d3>
 {% end %}
 
 ## この記事の要約
