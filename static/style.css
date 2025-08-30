@@ -87,13 +87,13 @@ code:not([data-lang]) {
     background-color: #0f1419;
 }
 
-.tableofcontent {
-    > p {
-        margin-bottom: 0;
-    }
-    > ul {
-        margin-top: 0;
-    }
+/* explicit selectors for better browser support */
+.tableofcontent > p {
+    margin-bottom: 0;
+}
+
+.tableofcontent > ul {
+    margin-top: 0;
 }
 
 blockquote {
