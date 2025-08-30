@@ -1,4 +1,4 @@
-base_url = "https://oshikiri.github.io"
+base_url = "https://oshikiri.org"
 
 [markdown]
 highlight_code = true
