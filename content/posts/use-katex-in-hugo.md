@@ -4,7 +4,7 @@ date = "2019-08-12"
 description = "Hugo で構築したブログで [KaTeX](https://katex.org/) を使った数式組版を行いたいが、よく使われている auto-render extension を使う方式だとエスケープの問題がある。そこで、Hugo の shortcode を経由することでエスケープの問題を回避する。"
 +++
 
-!!! 注意: このブログは以前 Hugo でビルドしていたが、[現在は zola に移行済み](@/posts/renew-this-blog.md)のため、この記事の数式レンダリング部分の一部は動かなくなっている。!!!
+!!! 注意: このブログは以前 Hugo でビルドしていたが、[現在は zola に移行済み](@/posts/renew-this-blog.md)のため、この記事の数式レンダリングの一部は動かない。!!!
 
 ## KaTeX の auto-render extension を使う方式
 
