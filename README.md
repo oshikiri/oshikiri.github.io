@@ -16,4 +16,4 @@ zola serve
 ```
 
 ## Deployment
-Push a new commit to the master branch and then `build-deploy` workflow will build and deploy the commit.
+Push a new commit to the master branch, and the `build-deploy` workflow will build and deploy it.
