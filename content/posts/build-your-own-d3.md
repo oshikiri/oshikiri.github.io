@@ -16,7 +16,7 @@ D3の難しさは、
 2. JavaScript、HTML、SVG など使うために必要になる事前知識が多い
 3. D3特有のAPI、特に d3-selection に慣れる必要がある
 
-から来ている（と思う）ので、内部の挙動を理解しつつ使うためにはこれらの項目を事前に抑えておく必要がある。
+から来ている（と思う）ので、内部の挙動を理解しつつ使うためにはこれらの項目を事前に押さえておく必要がある。
 
 これらについて理解するために、D3のAPIに沿って簡単なグラフを描画できるスクリプト [mini-d3.js](https://github.com/oshikiri/build-your-own-d3/blob/main/mini-d3.js) （[デモページ](https://oshikiri.github.io/build-your-own-d3/demo/bar_chart.html)）を作成した。
 
