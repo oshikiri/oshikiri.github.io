@@ -28,7 +28,7 @@ description = "1990年に発表された、“Why Are Vickrey Auctions Rare?” 
 
 まず、著者たちが「説得力がない」と考えた理由（nonreasons）を5つ挙げて検討している。
 
-1. **Multiple Objects for Sales** : Vickrey auction には望ましい性質がいくつかあるが、これは single item （オークションにかけられる品が単一の場合）の話で、multiple items の場合に一般に成り立たない。これが使われない理由ではないだろうか？しかし、 single item の場合も使われてないので、それは理由ではないだろう。
+1. **Multiple Objects for Sales** : Vickrey auction には望ましい性質がいくつかあるが、これは single item （オークションにかけられる品が単一の場合）の話で、multiple items の場合に一般に成り立たない。これが使われない理由ではないだろうか？しかし、 single item の場合も使われていないので、それは理由ではないだろう。
 2. **Bidder Risk Aversion** : "risk-averse bidder" がいる場合、Vickrey auction より first-price auction の方が収益が高くなる（[参考](https://en.wikipedia.org/wiki/Auction_theory#Benchmark_model)）。これが理由ではないか？
 3. **Bidder Asymmetry** : Vickrey の収入等価定理では、入札額の分布が *i.i.d.* であることを仮定していた。これが成り立たないとどうか？
 4. **Nonindependent values** : 同様に、入札者それぞれの評価値が独立でない場合はどうか？後にもう少し緩和した仮定のもとで同じ結果が示されている。この場合、得られる収益が SP > FP になる[^notations]ため、セカンドプライスオークションがあまり使われないことの説明にはならない。
